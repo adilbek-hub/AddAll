@@ -10,6 +10,7 @@ class HomeView extends StatelessWidget {
         centerTitle: true,
         title: const Text('HomeView'),
       ),
+      body: ElevatedButton(onPressed: () {}, child: const Icon(Icons.publish)),
     );
   }
 }
