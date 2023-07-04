@@ -1,3 +1,4 @@
+import 'package:add_all/add_product/add_product.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
@@ -10,7 +11,17 @@ class HomeView extends StatelessWidget {
         centerTitle: true,
         title: const Text('HomeView'),
       ),
-      body: ElevatedButton(onPressed: () {}, child: const Icon(Icons.publish)),
+      body: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddProductPage(),
+            ),
+          );
+        },
+        child: const Icon(Icons.publish),
+      ),
     );
   }
 }
