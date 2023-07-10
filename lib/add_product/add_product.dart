@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:add_all/add/model/product_model.dart';
 import 'package:add_all/constants/app_size.dart';
 import 'package:add_all/services/date_time_service.dart';
 import 'package:add_all/services/image_picker_service.dart';
+import 'package:add_all/services/loading_service.dart';
+import 'package:add_all/services/storage_service.dart';
+import 'package:add_all/services/store_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -88,6 +92,26 @@ class _AddProductPageState extends State<AddProductPage> {
               controller: _price,
             ),
             AppSize.height1,
+            ElevatedButton.icon(
+              onPressed: () async {
+                LoadingService().showLoading(context);
+                final urls = await StorageService().uploadImage(images);
+                final product = Product(
+                  title: _title.text,
+                  description: _description.text,
+                  dateTime: _dateTime.text,
+                  phoneNumber: _phoneNumber.text,
+                  userName: _userName.text,
+                  image: urls,
+                  address: _address.text,
+                );
+                await StoreService().saveProduct(product);
+                // ignore: use_build_context_synchronously
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              icon: const Icon(Icons.upload),
+              label: const Text('Жүктөө'),
+            )
           ],
         ),
       ),

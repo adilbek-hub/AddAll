@@ -1,3 +1,4 @@
+import 'package:add_all/add_product/add_product.dart';
 import 'package:add_all/view/home_view.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeView(),
+      routes: {
+        '/': (context) => const HomeView(),
+        'pageView': (context) => const AddProductPage(),
+      },
     );
   }
 }
