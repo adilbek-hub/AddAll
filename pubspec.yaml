@@ -39,6 +39,10 @@ dependencies:
   cloud_firestore: ^4.8.2
   flutter_rounded_date_picker: ^3.0.4
   intl: ^0.18.1
+  image_picker: ^1.0.0
+  permission_handler_web: ^0.0.2
+  permission_handler: ^10.4.1
+  firebase_storage: ^11.2.4
 
 dev_dependencies:
   flutter_test:

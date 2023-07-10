@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:add_all/constants/app_size.dart';
 import 'package:add_all/services/date_time_service.dart';
+import 'package:add_all/services/image_picker_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class AddProductPage extends StatefulWidget {
@@ -19,6 +23,7 @@ class _AddProductPageState extends State<AddProductPage> {
   final _userName = TextEditingController();
   final _address = TextEditingController();
   final _price = TextEditingController();
+  List<XFile> images = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,7 @@ class _AddProductPageState extends State<AddProductPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Column(
+        child: ListView(
           children: [
             CustomTextFireld(
               hintext: 'title',
@@ -41,6 +46,14 @@ class _AddProductPageState extends State<AddProductPage> {
               controller: _description,
               maxLines: 5,
             ),
+            AppSize.height1,
+            ///////////////////////////////////////////////////////////////////////
+            ImageContainer(
+              images: images,
+              onPicked: (value) => images = value,
+              delete: (xfile) => images.remove(xfile),
+            ),
+            AppSize.height1,
             CustomTextFireld(
               hintext: 'dateTime',
               controller: _dateTime,
@@ -54,21 +67,158 @@ class _AddProductPageState extends State<AddProductPage> {
                 );
               },
             ),
+            AppSize.height1,
             CustomTextFireld(
               hintext: 'phoneNumber',
               controller: _phoneNumber,
             ),
+            AppSize.height1,
             CustomTextFireld(
               hintext: 'userName',
               controller: _userName,
             ),
+            AppSize.height1,
             CustomTextFireld(
               hintext: 'address',
               controller: _address,
             ),
+            AppSize.height1,
             CustomTextFireld(
               hintext: 'price',
               controller: _price,
+            ),
+            AppSize.height1,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class ImageContainer extends StatefulWidget {
+  ImageContainer({
+    super.key,
+    required this.images,
+    required this.delete,
+    required this.onPicked,
+  });
+  ////////////////////////////////////////////////////////////
+  List<XFile> images;
+  final void Function(List<XFile> images) onPicked;
+  final void Function(XFile) delete;
+
+  @override
+  State<ImageContainer> createState() => _ImageContainerState();
+}
+
+class _ImageContainerState extends State<ImageContainer> {
+  ///////////////////////////////////////////////////////////////////
+  final service = ImagePickerService();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        border: Border.all(),
+      ),
+      child: widget.images.isNotEmpty
+          //////////////////////////////////////////////////////////////////////////////////
+          ? Stack(
+              children: [
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 5,
+                  ),
+                  itemCount: widget.images.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Images(
+                      widget.images[index],
+                      delete: (xfile) {
+                        widget.images.remove(xfile);
+                        widget.delete(xfile);
+                        setState(() {});
+                      },
+                    );
+                  },
+                ),
+                Positioned(
+                  top: 260,
+                  left: 250,
+                  child: IconButton(
+                    onPressed: () async {
+                      //////////////////////////////////////////////////////////
+                      final value = await service.pickImage();
+                      if (value.isNotEmpty) {
+                        widget.onPicked(value);
+                        widget.images = value;
+                        setState(() {});
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.camera_alt_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : IconButton(
+              onPressed: () async {
+                //////////////////////////////////////////////////////////
+                final value = await service.pickImage();
+                if (value.isNotEmpty) {
+                  widget.onPicked(value);
+                  widget.images = value;
+                  setState(() {});
+                }
+              },
+              icon: const Icon(
+                Icons.camera_alt_rounded,
+                size: 50,
+              ),
+            ),
+    );
+  }
+}
+
+class Images extends StatelessWidget {
+  const Images(
+    this.file, {
+    super.key,
+    required this.delete,
+  });
+  ///////////////////////////////////////////////////////////////////
+  final XFile file;
+  ///////////////////////////////////////////////////////////////////////
+  final void Function(XFile) delete;
+
+  @override
+  Widget build(BuildContext context) {
+    ///////////////////////////////////////////////////////////////////
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        //////////////////////////////////////////////////////////////////////////
+        child: Stack(
+          children: [
+            /////////////////////////////////////////////////////////////////////////
+            Image.file(
+              File(file.path),
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 35, bottom: 105),
+              child: IconButton(
+                onPressed: () => delete(file),
+                icon: const Icon(Icons.delete, color: Colors.red),
+              ),
             ),
           ],
         ),
